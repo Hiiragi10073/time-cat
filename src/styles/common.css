@@ -1,0 +1,9 @@
+.button-text {
+  border: none;
+  background: none;
+  outline: none;
+
+  color: #6989f1;
+
+  cursor: pointer;
+}

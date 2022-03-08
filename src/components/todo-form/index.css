@@ -1,0 +1,47 @@
+.todo-form {
+  width: 200px;
+  height: 120px;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.todo-form__header {
+  padding: 5px 10px;
+  text-align: right;
+}
+
+.todo-form__content {
+  padding: 0 10px;
+}
+
+.form-item {
+  margin-bottom: 8px;
+}
+
+.form-item__content {
+  margin-left: 40px;
+}
+
+.form-item__content--button {
+  margin-left: 0;
+}
+
+.form-item__label {
+  float: left;
+  padding-right: 8px;
+
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.form-item__input {
+  width: 100%;
+}
