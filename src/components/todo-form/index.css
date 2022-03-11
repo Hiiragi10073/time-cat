@@ -44,4 +44,14 @@
 
 .form-item__input {
   width: 100%;
+
+  border: 1px solid #767676;
+  border-radius: 2px;
+  outline: none;
+
+  box-sizing: border-box;
+}
+
+.form-item__input:focus {
+  border: 1px solid #6a8af1;
 }

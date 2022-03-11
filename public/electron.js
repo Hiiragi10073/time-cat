@@ -1,33 +1,35 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
+const { install: storeInstall } = require('./store/index');
 
 let win = null;
 
 ipcMain.on('size-change', (event, flag) => {
+  win.setOpacity(0);
   const [x, y] = win.getPosition();
   if (flag) {
-    win.setSize(500, 300, true);
-    win.setPosition(x, y - 300 + 75, true);
+    win.setBounds({
+      x,
+      y: y - 300 + 75,
+      width: 500,
+      height: 300,
+    });
   } else {
-    win.setSize(120, 75, true);
-    win.setPosition(x, y + 300 - 75, true);
+    win.setBounds({
+      x,
+      y: y + 300 - 75,
+      width: 120,
+      height: 75,
+    });
   }
+  setTimeout(() => {
+    win.setOpacity(1);
+  }, 300);
 });
 
 ipcMain.on('pos-change', (event, { x, y }) => {
   win.setPosition(x, y, true);
-});
-
-const { getTodo, setTodo } = require('./store');
-
-ipcMain.handle('get-todo', () => {
-  console.log(getTodo());
-  return getTodo();
-});
-
-ipcMain.on('set-todo', (e, value) => {
-  setTodo(value);
 });
 
 function createWindow() {
@@ -39,13 +41,13 @@ function createWindow() {
     frame: false,
     transparent: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload/preload.js'),
     },
   });
 
   win.loadURL(
     url.format({
-      pathname: path.join(__dirname, './index.html'),
+      pathname: path.join(__dirname, 'build/index.html'),
       protocol: 'file:',
       slashes: true,
     })
@@ -57,5 +59,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  storeInstall();
   createWindow();
 });

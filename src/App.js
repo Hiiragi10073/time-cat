@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import './App.css';
 import './styles/index.css';
@@ -8,15 +8,17 @@ import Todo from './components/todo';
 import catImg from './assets/img/cat.png';
 
 function App() {
-  const initData = JSON.parse(localStorage.getItem('todo') || '[]');
   const [show, setShow] = useState(false);
-  const [data, setData] = useState(initData);
+  const [data, setData] = useState([]);
   const { ipcRenderer } = window.electron;
 
-  console.log(data);
+  useEffect(() => {
+    ipcRenderer.invoke('get-todo').then((data) => {
+      setData(data);
+    });
+  }, [show]);
 
   function handleMouseDown(e) {
-    console.log('down');
     const mouseX = e.pageX;
     const mouseY = e.pageY;
 
@@ -27,7 +29,6 @@ function App() {
 
     function handleMove(e) {
       if (!isDrag) {
-        console.log('move');
         const cMouseX = e.pageX;
         const cMouseY = e.pageY;
 
@@ -35,7 +36,6 @@ function App() {
           (cMouseX - mouseX) ** 2 + (cMouseY - mouseY) ** 2
         );
         if (dis > 10) {
-          console.log('drag');
           isDrag = true;
         }
       } else {
@@ -59,8 +59,37 @@ function App() {
   }
 
   function changeSize() {
-    setShow(!show);
     ipcRenderer.send('size-change', !show);
+    setTimeout(
+      () => {
+        setShow(!show);
+      },
+      show ? 0 : 300
+    );
+  }
+
+  function handleAdd(data) {
+    ipcRenderer.invoke('add-todo', data).then((result) => {
+      setData(result);
+    });
+  }
+
+  function handleEdit(data) {
+    ipcRenderer.invoke('set-todo', data.id, data).then((result) => {
+      setData(result);
+    });
+  }
+
+  function handleDel(id) {
+    ipcRenderer.invoke('del-todo', id).then((result) => {
+      setData(result);
+    });
+  }
+
+  function handleClear(id) {
+    ipcRenderer.invoke('clear-todo', id).then((result) => {
+      setData(result);
+    });
   }
 
   return (
@@ -72,7 +101,15 @@ function App() {
         src={catImg}
         onMouseDown={handleMouseDown}
       />
-      {show && <Todo data={data} setData={setData}></Todo>}
+      {show && (
+        <Todo
+          data={data}
+          add={handleAdd}
+          edit={handleEdit}
+          del={handleDel}
+          clear={handleClear}
+        ></Todo>
+      )}
     </div>
   );
 }

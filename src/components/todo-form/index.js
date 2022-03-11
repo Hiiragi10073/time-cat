@@ -7,8 +7,12 @@ export function TodoForm(props) {
 
   function handleSubmit(e) {
     props.submit({
-      title,
-      time,
+      data: {
+        ...props.data,
+        title,
+        time,
+      },
+      status: props.status,
     });
     props.setIsShowForm(false);
     e.preventDefault();
